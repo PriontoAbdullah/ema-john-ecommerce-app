@@ -5,13 +5,17 @@ import ReviewItem from '../ReviewItem/ReviewItem';
 import Cart from '../Cart/cart';
 import happyImage from '../../images/giphy.gif';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingBag, faSignInAlt } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom';
+import { useAuth } from '../Login/useAuth';
 
 const Review = () => {
     const [cart, setCart] = useState([]);
     const [orderPlaced, setOrderPlaced] = useState(false);
 
-    const handlePlaceOrder = () => {
+    const auth = useAuth();
+
+    const handlePlaceOrder = () => { // After proceed Checkout
         setCart([]);
         setOrderPlaced(true);
         processOrder();
@@ -56,11 +60,23 @@ const Review = () => {
                 {
                     thankYou
                 }
+                {
+                    !cart.length && <h1>Yor cart is empty. <a href="/shop"> Keep shopping</a></h1>
+                }
             </div>
             <div className="cart-container">
-                <Cart cart={cart}></Cart>
-                <button className="add-button" onClick={handlePlaceOrder}>
-                    <FontAwesomeIcon icon={faShoppingBag} /> Place Order</button>
+                <Cart cart={cart}>
+                    <Link to="/shipment">
+                        {
+                            auth.user ?
+                                <button className="add-button" onClick={handlePlaceOrder}>
+                                    <FontAwesomeIcon icon={faShoppingBag} /> Proceed Checkout</button>
+                                :
+                                <button className="add-button" >
+                                    <FontAwesomeIcon icon={faSignInAlt} /> Login to Proceed</button>
+                        }
+                    </Link>
+                </Cart>
             </div>
         </div>
     )

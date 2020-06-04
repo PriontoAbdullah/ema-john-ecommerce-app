@@ -1,8 +1,8 @@
 import React from 'react';
 
-
-const cart = (props) => {
+const Cart = (props) => {
     const cart = props.cart;
+
     const totalPrice = cart.reduce((totalPrice, product) => totalPrice + product.price * product.quantity, 0);
 
     let shipping = 0;
@@ -39,4 +39,4 @@ const cart = (props) => {
     );
 };
 
-export default cart;
+export default Cart;

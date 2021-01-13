@@ -2,24 +2,30 @@ import { faSearchDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import loading from '../../images/loading.gif';
 import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/cart';
 import Product from '../Product/Product';
 import './Shop.css';
+const _ = require("lodash");  
 
 const Shop = () => {
 
-    // const first10 = fakeData.slice(0, 10);
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
-
-
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         fetch('http://localhost:5000/products')
             .then(res => res.json())
-            .then(data => setProducts(data))
+            .then(data => setProducts(_.shuffle(data)))
     }, [])
+
+    useEffect(() => {
+        fetch('http://localhost:5000/filterProducts?search='+search)
+            .then(res => res.json())
+            .then(data => setProducts((data)))
+    }, [search])
 
     useEffect(() => {
         const savedCart = getDatabaseCart();
@@ -47,6 +53,10 @@ const Shop = () => {
         // }
     }, [ ])
 
+    const handleSearch = event => {
+        setSearch(event.target.value);
+    }
+
     const handleAddProduct = (product) => {
         // console.log(newCart);
         const toBeAddedKey = product.key;
@@ -73,13 +83,17 @@ const Shop = () => {
     return (
         <div className='shop-container'>
             <div className='product-container'>
+                <input type="text" onBlur={handleSearch} className="product-search" placeholder="Search Product" />
                 {
-                    products.map(productItem => <Product
+                    products.slice(0, 30).map(productItem => <Product
                         key={productItem.key}
                         handleAddProduct={handleAddProduct}
                         showAddToCart={true}
                         product={productItem}>
                     </Product>)
+                }
+                {
+                   products.length === 0 && <img src={loading} alt="loading" style={{marginLeft: '100px'}}></img> 
                 }
             </div>
             <div className="cart-container">

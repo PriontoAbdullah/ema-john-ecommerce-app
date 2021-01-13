@@ -40,8 +40,8 @@ const Shipment = () => {
 	};
 
 	return (
-		<div className="row">
-			<div className="col-md-6" style={{display: shippingData ? 'none' : 'block'}}>
+		<div >
+			<div  style={{display: shippingData ? 'none' : 'block'}}>
 				<form className="ship-form" onSubmit={handleSubmit(onSubmit)}>
 					<input
 						type="text"
@@ -84,7 +84,7 @@ const Shipment = () => {
 				</form>
 			</div>
 
-			<div className="col-md-3 mt-5 mx-5"  style={{display: shippingData ? 'block' : 'none'}}>
+			<div style={{display: shippingData ? 'block' : 'none'}}>
 				<h5 className="py-3">Pay with stripe</h5>
 				<ProcessPayment handlePaymentSuccess={handlePaymentSuccess}/>
 			</div>

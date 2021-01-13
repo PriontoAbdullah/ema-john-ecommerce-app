@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import happyImage from '../../images/giphy.gif';
 import { getDatabaseCart, processOrder } from '../../utilities/databaseManager';
 import { useAuth } from '../Login/useAuth';
 import ProcessPayment from '../ProcessPayment/ProcessPayment';
@@ -7,12 +8,13 @@ import './shipment.css';
 
 const Shipment = () => {
 	const { register, handleSubmit, errors } = useForm();
-    const auth = useAuth();
-    const [shippingData, setShippingData] = useState(null);
+	const auth = useAuth();
+	const [ shippingData, setShippingData ] = useState(null);
+	const [ orderPlaced, setOrderPlaced ] = useState(false);
 
 	const onSubmit = (data) => {
-        setShippingData(data)
-    };
+		setShippingData(data);
+	};
 
 	const handlePaymentSuccess = (paymentID) => {
 		const savedCart = getDatabaseCart();
@@ -25,7 +27,7 @@ const Shipment = () => {
 			orderTime: new Date()
 		};
 
-		fetch('http://localhost:5000/addOrder', {
+		fetch('https://stormy-plateau-95863.herokuapp.com/addOrders', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(orderDetails)
@@ -34,14 +36,19 @@ const Shipment = () => {
 			.then((data) => {
 				if (data) {
 					processOrder();
-					alert('Your Order placed successfully');
+					setOrderPlaced(true);
 				}
 			});
 	};
 
+	let thankYou;
+	if (orderPlaced) {
+		thankYou = <img src={happyImage} alt="happy Image" />;
+	}
+
 	return (
-		<div >
-			<div  style={{display: shippingData ? 'none' : 'block'}}>
+		<div>
+			<div style={{ display: shippingData ? 'none' : 'block' }}>
 				<form className="ship-form" onSubmit={handleSubmit(onSubmit)}>
 					<input
 						type="text"
@@ -84,10 +91,12 @@ const Shipment = () => {
 				</form>
 			</div>
 
-			<div style={{display: shippingData ? 'block' : 'none'}}>
+			<div style={{ display: shippingData ? 'block' : 'none', width: '400px', marginLeft: '50px'}}>
 				<h5 className="py-3">Pay with stripe</h5>
-				<ProcessPayment handlePaymentSuccess={handlePaymentSuccess}/>
+				<ProcessPayment handlePaymentSuccess={handlePaymentSuccess} />
 			</div>
+
+			{thankYou}
 		</div>
 	);
 };

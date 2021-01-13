@@ -1,4 +1,5 @@
 import React from 'react';
+import './Login.css';
 import Auth from './useAuth';
 
 const Login = () => {
@@ -22,10 +23,10 @@ const Login = () => {
     }
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div style={{ textAlign: 'center', marginTop: '70px' }}>
             {
-                auth.user ? <button onClick={handleSignOut}>Sign Out</button> :
-                    <button onClick={handleSignIn}>Sign in with Google</button>
+                auth.user ? <button onClick={handleSignOut} className="logout-button">Sign Out</button> :
+                    <button onClick={handleSignIn} className="login-button">Sign in with Google</button>
             }
         </div>
     );

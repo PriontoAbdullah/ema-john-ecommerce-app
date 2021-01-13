@@ -15,16 +15,16 @@ const Shop = () => {
     const [cart, setCart] = useState([]);
     const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        fetch('http://localhost:5000/products')
-            .then(res => res.json())
-            .then(data => setProducts(_.shuffle(data)))
-    }, [])
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/products')
+    //         .then(res => res.json())
+    //         .then(data => setProducts(_.shuffle(data)))
+    // }, [])
 
     useEffect(() => {
-        fetch('http://localhost:5000/filterProducts?search='+search)
+        fetch('https://stormy-plateau-95863.herokuapp.com/products?search='+search)
             .then(res => res.json())
-            .then(data => setProducts((data)))
+            .then(data => setProducts(_.shuffle(data)))
     }, [search])
 
     useEffect(() => {
@@ -32,7 +32,7 @@ const Shop = () => {
         console.log(savedCart);
         const productKeys = Object.keys(savedCart);
 
-        fetch('http://localhost:5000/productsByKeys', { 
+        fetch('https://stormy-plateau-95863.herokuapp.com/productsByKeys', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify(productKeys)

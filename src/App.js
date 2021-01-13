@@ -20,12 +20,9 @@ function App() {
 		<div>
 			{/* <UserContext.Provider value={[loggedInUser, setLoggedInUser]} > */}
 			<AuthProvider>
-				<Header />
 				<Router>
+					<Header />
 					<Switch>
-						<Route path="/shop">
-							<Shop />
-						</Route>
 						<Route path="/review">
 							<Review />
 						</Route>

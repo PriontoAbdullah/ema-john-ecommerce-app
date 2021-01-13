@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { getDatabaseCart, removeFromDatabaseCart, processOrder } from '../../utilities/databaseManager';
-import fakeData from '../../fakeData';
-import ReviewItem from '../ReviewItem/ReviewItem';
-import Cart from '../Cart/cart';
-import happyImage from '../../images/giphy.gif';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingBag, faSignInAlt } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingBag, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import happyImage from '../../images/giphy.gif';
+import { getDatabaseCart, processOrder, removeFromDatabaseCart } from '../../utilities/databaseManager';
+import Cart from '../Cart/cart';
 import { useAuth } from '../Login/useAuth';
+import ReviewItem from '../ReviewItem/ReviewItem';
 
 const Review = () => {
     const [cart, setCart] = useState([]);
@@ -33,13 +32,24 @@ const Review = () => {
         const savedCart = getDatabaseCart();
         const productKeys = Object.keys(savedCart);
 
-        const cartProducts = productKeys.map(key => {
-            const product = fakeData.find(productItem => productItem.key === key);
-            product.quantity = savedCart[key];
-            return product;
-        });
-        // console.log(cartProducts);
-        setCart(cartProducts);
+        fetch('http://localhost:5000/productsByKeys', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(productKeys)
+        })
+        .then( res => res.json())
+        .then( data => {
+            const cartProducts = productKeys.map(key => {
+                const product = data.find(productItem => productItem.key === key);
+                product.quantity = savedCart[key];
+                return product;
+    
+            });
+            // console.log(cartProducts);
+            setCart(cartProducts);
+        })
+
+     
     }, [])
 
     let thankYou;
@@ -69,7 +79,7 @@ const Review = () => {
                     <Link to="/shipment">
                         {
                             auth.user ?
-                                <button className="add-button" onClick={handlePlaceOrder}>
+                                <button className="add-button" >
                                     <FontAwesomeIcon icon={faShoppingBag} /> Proceed Checkout</button>
                                 :
                                 <button className="add-button" >

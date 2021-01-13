@@ -1,32 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import fakeData from '../../fakeData';
-import Product from '../Product/Product';
-import Cart from '../Cart/cart';
-import './Shop.css';
-import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
+import { faSearchDollar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearchDollar } from '@fortawesome/free-solid-svg-icons'
+import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
+import Cart from '../Cart/cart';
+import Product from '../Product/Product';
+import './Shop.css';
 
 const Shop = () => {
 
-    const first10 = fakeData.slice(0, 10);
-    const [products, setProducts] = useState(first10);
+    // const first10 = fakeData.slice(0, 10);
+    const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
+
+
+
+    useEffect(() => {
+        fetch('http://localhost:5000/products')
+            .then(res => res.json())
+            .then(data => setProducts(data))
+    }, [])
 
     useEffect(() => {
         const savedCart = getDatabaseCart();
-        // console.log(savedCart);
+        console.log(savedCart);
         const productKeys = Object.keys(savedCart);
 
-        const previousCart = productKeys.map(existingKey => {
-            const product = fakeData.find(productItem => productItem.key === existingKey);
-            // console.log(existingKey, savedCart[existingKey]);
-            product.quantity = savedCart[existingKey];
-            return product;
+        fetch('http://localhost:5000/productsByKeys', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(productKeys)
         })
-        setCart(previousCart);
-    }, [])
+        .then( res => res.json())
+        .then( data => {
+            setCart(data)
+        })
+
+        // if (products.length > 0) {
+        //     const previousCart = productKeys.map(existingKey => {
+        //         const product = products.find(productItem => productItem.key === existingKey);
+        //         // console.log(existingKey, savedCart[existingKey]);
+        //         product.quantity = savedCart[existingKey];
+        //         return product;
+        //     })
+        //     setCart(previousCart);
+        // }
+    }, [ ])
 
     const handleAddProduct = (product) => {
         // console.log(newCart);
@@ -49,6 +68,7 @@ const Shop = () => {
         setCart(newCart);
         addToDatabaseCart(product.key, count);
     }
+
 
     return (
         <div className='shop-container'>
